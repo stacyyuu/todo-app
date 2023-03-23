@@ -1,5 +1,13 @@
 import React, { useEffect, useState, createContext } from "react";
-import { TextInput, Button, Group, Box, Slider } from "@mantine/core";
+import {
+  TextInput,
+  Button,
+  Group,
+  Box,
+  Slider,
+  Grid,
+  Center,
+} from "@mantine/core";
 import useForm from "../../hooks/form";
 import { v4 as uuid } from "uuid";
 import List from "../List/index";
@@ -50,56 +58,64 @@ const Todo = () => {
 
   return (
     <>
-      <header data-testid="todo-header" >
-        <h1 data-testid="todo-h1">To Do List: {incomplete} items pending</h1>
-      </header>
+      <Center>
+        <header data-testid="todo-header">
+          <h1 data-testid="todo-h1">To Do List: {incomplete} items pending</h1>
+        </header>
+      </Center>
 
-      <Box maw={300} mx="auto">
-        <form onSubmit={handleSubmit}>
-          <h2>Add To Do Item:</h2>
-          <TextInput
-            label="To Do Item"
-            name="text"
-            type="text"
-            placeholder="Item Details"
-            onChange={handleChange}
-          />
+      <Grid>
+        <Grid.Col span={6}>
+          <Box maw={300} mx="auto">
+            <form onSubmit={handleSubmit}>
+              <h2>Add To Do Item:</h2>
+              <TextInput
+                label="To Do Item"
+                name="text"
+                type="text"
+                placeholder="Item Details"
+                onChange={handleChange}
+              />
 
-          <TextInput
-            label="Assigned To"
-            name="assignee"
-            type="text"
-            placeholder="Assignee Name"
-            onChange={handleChange}
-          />
+              <TextInput
+                label="Assigned To"
+                name="assignee"
+                type="text"
+                placeholder="Assignee Name"
+                onChange={handleChange}
+              />
 
-          <Slider
-            label="Difficulty"
-            placeholder="Difficulty"
-            radius="xl"
-            min={1}
-            max={5}
-            marks={[
-              { value: 1, label: "1" },
-              { value: 2, label: "2" },
-              { value: 3, label: "3" },
-              { value: 4, label: "4" },
-              { value: 5, label: "5" },
-            ]}
-            defaultValue={defaultValues.difficulty}
-            onChange={handleChange}
-          />
+              <Slider
+                label="Difficulty"
+                placeholder="Difficulty"
+                radius="xl"
+                min={1}
+                max={5}
+                marks={[
+                  { value: 1, label: "1" },
+                  { value: 2, label: "2" },
+                  { value: 3, label: "3" },
+                  { value: 4, label: "4" },
+                  { value: 5, label: "5" },
+                ]}
+                defaultValue={defaultValues.difficulty}
+                onChange={handleChange}
+              />
 
-          <Group position="right" mt="xl">
-            <Button type="submit">Add Item</Button>
-          </Group>
-        </form>
-      </Box>
+              <Group position="right" mt="xl">
+                <Button type="submit">Add Item</Button>
+              </Group>
+            </form>
+          </Box>
+        </Grid.Col>
 
-      <formContext.Provider value={{ list, toggleComplete, defaultValues }}>
-        <Settings />
-        <List />
-      </formContext.Provider>
+        <formContext.Provider value={{ list, toggleComplete, defaultValues }}>
+          <Grid.Col span={4}>
+            <Settings />
+            <List />
+          </Grid.Col>
+        </formContext.Provider>
+      </Grid>
     </>
   );
 };
