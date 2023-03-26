@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createContext } from "react";
+import React, { useContext } from "react";
 import {
   TextInput,
   Button,
@@ -10,57 +10,25 @@ import {
 } from "@mantine/core";
 import useForm from "../../hooks/form";
 import { v4 as uuid } from "uuid";
-import List from "../List/index";
-import Settings from "../Card/index";
+import { SettingsContext } from "../../Context/Settings";
 
-export const formContext = createContext("");
 
-const Todo = () => {
-  const [defaultValues] = useState({
-    difficulty: 4,
-    itemsShown: 3,
-  });
-  const [list, setList] = useState([]);
-  const [incomplete, setIncomplete] = useState([]);
-  const { handleChange, handleSubmit } = useForm(addItem, defaultValues);
+const Todo = (props) => {
+  const settings = useContext(SettingsContext);
+  const { handleChange, handleSubmit } = useForm(addItem, settings.defaultValues);
 
   function addItem(item) {
     item.id = uuid();
     item.complete = false;
     console.log(item);
-    setList([...list, item]);
+    settings.addItemToList(item);
   }
-
-  function deleteItem(id) {
-    const items = list.filter((item) => item.id !== id);
-    setList(items);
-  }
-
-  function toggleComplete(id) {
-    const items = list.map((item) => {
-      if (item.id === id) {
-        item.complete = !item.complete;
-      }
-      return item;
-    });
-
-    setList(items);
-  }
-
-  useEffect(() => {
-    let incompleteCount = list.filter((item) => !item.complete).length;
-    setIncomplete(incompleteCount);
-    document.title = `To Do List: ${incomplete}`;
-    // linter will want 'incomplete' added to dependency array unnecessarily.
-    // disable code used to avoid linter warning
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [list]);
 
   return (
     <>
       <Center>
         <header data-testid="todo-header">
-          <h1 data-testid="todo-h1">To Do List: {incomplete} items pending</h1>
+          <h1 data-testid="todo-h1">To Do List: {settings.incomplete} items pending</h1>
         </header>
       </Center>
 
@@ -98,23 +66,15 @@ const Todo = () => {
                   { value: 4, label: "4" },
                   { value: 5, label: "5" },
                 ]}
-                defaultValue={defaultValues.difficulty}
+                defaultValue={settings.defaultValues.difficulty}
                 onChange={handleChange}
               />
-
               <Group position="right" mt="xl">
                 <Button type="submit">Add Item</Button>
               </Group>
             </form>
           </Box>
         </Grid.Col>
-
-        <formContext.Provider value={{ list, toggleComplete, defaultValues }}>
-          <Grid.Col span={4}>
-            <Settings />
-            <List />
-          </Grid.Col>
-        </formContext.Provider>
       </Grid>
     </>
   );
