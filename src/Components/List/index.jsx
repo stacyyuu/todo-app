@@ -1,13 +1,13 @@
 import React, { useContext, useState } from "react";
-import { formContext } from "../Todo/index";
-import { Card, Image, Text, Badge, Button, Group } from "@mantine/core";
+import { SettingsContext } from "../../Context/Settings";
+import { Card, Text, Badge, Button, Group } from "@mantine/core";
 import { Pagination } from "@mantine/core";
 
-const List = () => {
+const List = (props) => {
   const [activePage, setPage] = useState(1);
-  const todoList = useContext(formContext);
-  const todoItems = todoList.list;
-  const itemsPerPage = todoList.defaultValues.itemsShown;
+  const settings = useContext(SettingsContext);
+  const todoItems = settings.list;
+  const itemsPerPage = settings.numItems;
 
   const pageCount = Math.ceil(todoItems.length / itemsPerPage);
   const displayedItems = todoItems.slice(
@@ -15,6 +15,7 @@ const List = () => {
     activePage * itemsPerPage
   );
 
+  // start = 0; end = start + settings.num;, display = people.slice(start, end);
   const handlePageChange = (page) => {
     setPage(page);
   };
@@ -40,7 +41,7 @@ const List = () => {
                 fullWidth
                 mt="md"
                 radius="md"
-                onClick={() => todoList.toggleComplete(item.id)}
+                onClick={() => settings.toggleComplete(item.id)}
               >
                 Complete: {item.complete.toString()}
               </Button>
