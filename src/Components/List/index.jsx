@@ -8,6 +8,7 @@ const List = (props) => {
   const settings = useContext(SettingsContext);
   const todoItems = settings.list;
   const itemsPerPage = settings.numItems;
+  console.log(settings);
 
   const pageCount = Math.ceil(todoItems.length / itemsPerPage);
   const displayedItems = todoItems.slice(

@@ -8,7 +8,6 @@ const Settings = (props) => {
   });
   const [list, setList] = useState([]);
   const [incomplete, setIncomplete] = useState([]);
-
   const [showCompleted, setShowCompleted] = useState(false);
   const [numItems, setNumItems] = useState(3);
 
@@ -24,7 +23,6 @@ const Settings = (props) => {
       }
       return item;
     });
-
     setList(items);
   }
 
@@ -53,7 +51,7 @@ const Settings = (props) => {
 
   useEffect(() => {
     let savedBoolean = localStorage.getItem("Show completed");
-    let savedNumItems = localStorage.getItem("Items displayed");
+    let savedNumItems = localStorage.getItem("Items displayed") || numItems;
     changeShowCompleted(savedBoolean);
     changeNumItems(savedNumItems);
   }, []);
