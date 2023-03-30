@@ -43,8 +43,6 @@ class LoginProvider extends React.Component {
 
   login = ( username, password ) => {
 
-    let { loggedIn, user, token } = this.state;
-
     let validUser = testUsers[username];
 
     if( validUser && validUser.password === password ) {
