@@ -10,7 +10,7 @@ import {
 } from "@mantine/core";
 import useForm from "../../hooks/form";
 import { v4 as uuid } from "uuid";
-import { SettingsContext } from "../../Context/Settings";
+import { SettingsContext }  from "../../Context/Settings";
 
 
 const Todo = (props) => {
