@@ -1,97 +1,103 @@
-import React from 'react';
-import jwt_decode from 'jwt-decode';
-import jwtDecode from 'jwt-decode';
+import React, { useState, createContext } from "react";
+import jwt_decode from "jwt-decode";
+import axios from "axios";
 
-const testUsers = {
-  Administrator: {
-    password: 'admin',
-    name: 'Administrator',
-    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQWRtaW5pc3RyYXRvciIsInJvbGUiOiJhZG1pbiIsImNhcGFiaWxpdGllcyI6IlsnY3JlYXRlJywncmVhZCcsJ3VwZGF0ZScsJ2RlbGV0ZSddIiwiaWF0IjoxNTE2MjM5MDIyfQ.pAZXAlTmC8fPELk2xHEaP1mUhR8egg9TH5rCyqZhZkQ'
-  },
-  Editor: {
-    password: 'editor',
-    name: 'Editor',
-    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRWRpdG9yIiwicm9sZSI6ImVkaXRvciIsImNhcGFiaWxpdGllcyI6IlsncmVhZCcsJ3VwZGF0ZSddIiwiaWF0IjoxNTE2MjM5MDIyfQ.3aDn3e2pf_J_1rZig8wj9RiT47Ae2Lw-AM-Nw4Tmy_s'
-  },
-  Writer: {
-    password: 'writer',
-    name: 'Writer',
-    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiV3JpdGVyIiwicm9sZSI6IndyaXRlciIsImNhcGFiaWxpdGllcyI6IlsnY3JlYXRlJ10iLCJpYXQiOjE1MTYyMzkwMjJ9.dmKh8m18mgQCCJp2xoh73HSOWprdwID32hZsXogLZ68'
-  },
-  User: {
-    password: 'user',
-    name: 'User',
-    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVXNlciIsInJvbGUiOiJ1c2VyIiwiY2FwYWJpbGl0aWVzIjoiWydyZWFkJ10iLCJpYXQiOjE1MTYyMzkwMjJ9.WXYvIKLdPz_Mm0XDYSOJo298ftuBqqjTzbRvCpxa9Go'
-  },
-};
+export const LoginContext = createContext();
 
-export const LoginContext = React.createContext();
+const LoginProvider = (props) => {
+  const [login, setLoginState] = useState(false);
+  const [logout, setLogoutState] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [token, setToken] = useState(null);
+  const [user, setUser] = useState({ capabilities: [] });
 
-class LoginProvider extends React.Component {
+  const userLogin = async (username, password) => {
+    let url = process.env.REACT_APP_API;
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      loggedIn: false,
-      token: null,
-      user: { capabilities: [] },
-      login: this.login,
-      logout: this.logout,
-      can: this.can
+    const axiosRequest = {
+      url: `${url}/signin`,
+      method: "post",
+      auth: {
+        username,
+        password,
+      },
     };
-  }
+    let response = await axios(axiosRequest);
+    const { token } = response.data;
+    setToken(token);
 
-  login = ( username, password ) => {
-
-    let validUser = testUsers[username];
-
-    if( validUser && validUser.password === password ) {
-       try {
-         this.validateToken(validUser.token);
-       } catch(e) {
-         this.setLoginState( false, null, {}, e.message );
-       }
+    if (token) {
+      try {
+        validateToken(token);
+      } catch (e) {
+        setLoginState(false);
+        setLogoutState(true);
+        setToken(null);
+        setLoggedIn(false);
+        setUser({});
+      }
     } else {
-       this.setLoginState( false, null, {}, { message: "Invalid User"} );
+      setLogoutState(true);
+      setToken(null);
+      setLoggedIn(false);
+      setUser({ message: "Invalid User" });
     }
+  };
 
-  }
-
-  validateToken = (token) => {
+  const validateToken = (token) => {
     try {
       let validUser = jwt_decode(token);
-      this.setLoginState( true, token, validUser );
-    } catch(e) {
-      this.setLoginState( false, null, {}, e.message );
+      setLoginState(true);
+      setLogoutState(false);
+      setToken(token);
+      setUser(validUser);
+      setLoggedIn(true);
+    } catch (e) {
+      setLoginState(false);
+      setLogoutState(true);
+      setToken(null);
+      setUser({});
+      setLoggedIn(false);
     }
-  }
+  };
 
-  setLoginState = (loggedIn, token, user, error) => {
-    this.setState( {loggedIn, token, user, error } );
-    localStorage.setItem( 'auth', token );
-  }
+  // const changeLoginState = (loggedIn, token, user, error) => {
+  //   setLoginState(true);
+  //   setLoggedIn(true);
+  //   setLogoutState(false);
+  //   setToken(token);
+  //   setUser(user);
+  // };
 
-  logout = () => {
-      this.setLoginState( false, null, {} );
-  }
+  const userLogout = () => {
+    setLoginState(false);
+    setLoggedIn(false);
+    setLogoutState(true);
+    setToken(null);
+    setUser({});
+  };
 
-  can = (capability) => {
-    return this?.state?.user?.capabilities?.includes(capability);
-  }
+  const can = (capability) => {
+    return user?.capabilities?.includes(capability);
+  };
 
-  componentDidMount() {
-    const token = localStorage.getItem('auth');
-    this.validateToken(token);
-  }
+  // const componentDidMount = () => {
+  //   const token = localStorage.getItem("auth");
+  //   validateToken(token);
+  // };
 
-  render() {
-    return (
-      <LoginContext.Provider value={this.state}>
-        {this.props.children}
-      </LoginContext.Provider>
-    )
-  }
+  let exportedSettings = {
+    userLogin,
+    loggedIn,
+    userLogout,
+    can,
+  };
 
-}
+  return (
+    <LoginContext.Provider value={exportedSettings}>
+      {props.children}
+    </LoginContext.Provider>
+  );
+};
 
 export default LoginProvider;

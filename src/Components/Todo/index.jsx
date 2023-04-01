@@ -8,21 +8,21 @@ import {
   Grid,
   Center,
 } from "@mantine/core";
-import useForm from "../../hooks/form";
-import { v4 as uuid } from "uuid";
+// import useForm from "../../hooks/form";
+// import { v4 as uuid } from "uuid";
 import { SettingsContext }  from "../../Context/Settings";
 
 
 const Todo = (props) => {
   const settings = useContext(SettingsContext);
-  const { handleChange, handleSubmit } = useForm(addItem, settings.defaultValues);
+  // const { handleChange, handleSubmit } = useForm(addItem, settings.defaultValues);
 
-  function addItem(item) {
-    item.id = uuid();
-    item.complete = false;
-    console.log(item);
-    settings.addItemToList(item);
-  }
+  // function addItem(item) {
+  //   item.id = uuid();
+  //   item.complete = false;
+  //   console.log(item);
+  //   props.handleAddItem(item);
+  // }
 
   return (
     <>
@@ -35,22 +35,22 @@ const Todo = (props) => {
       <Grid>
         <Grid.Col span={6}>
           <Box maw={300} mx="auto">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={props.handleAddItem}>
               <h2>Add To Do Item:</h2>
               <TextInput
                 label="To Do Item"
                 name="text"
                 type="text"
                 placeholder="Item Details"
-                onChange={handleChange}
+                onChange={props.handleChange}
               />
 
               <TextInput
                 label="Assigned To"
                 name="assignee"
                 type="text"
-                placeholder="Assignee Name"
-                onChange={handleChange}
+                placeholder="Assignee Name"   
+                onChange={props.handleAssignee}
               />
 
               <Slider
@@ -67,7 +67,7 @@ const Todo = (props) => {
                   { value: 5, label: "5" },
                 ]}
                 defaultValue={settings.defaultValues.difficulty}
-                onChange={handleChange}
+                onChange={props.handleDifficulty}
               />
               <Group position="right" mt="xl">
                 <Button type="submit">Add Item</Button>
