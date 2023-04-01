@@ -6,17 +6,18 @@ import { Pagination } from "@mantine/core";
 const List = (props) => {
   const [activePage, setPage] = useState(1);
   const settings = useContext(SettingsContext);
-  const todoItems = settings.list;
+
+  const todoItems = props.items;
   const itemsPerPage = settings.numItems;
-  console.log(settings);
+
 
   const pageCount = Math.ceil(todoItems.length / itemsPerPage);
+
   const displayedItems = todoItems.slice(
     (activePage - 1) * itemsPerPage,
     activePage * itemsPerPage
   );
 
-  // start = 0; end = start + settings.num;, display = people.slice(start, end);
   const handlePageChange = (page) => {
     setPage(page);
   };

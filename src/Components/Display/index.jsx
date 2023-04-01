@@ -22,7 +22,7 @@ const Display = () => {
       </label>
       <label>Completed:
       <Switch
-        checked={settings.showCompleted} 
+        checked={settings.showCompleted === true ? true : false}
         onChange={(e) => settings.changeShowCompleted(e.currentTarget.checked)}
         />
       </label>

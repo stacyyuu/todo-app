@@ -6,7 +6,6 @@ const useForm = (callback, defaultValues={}) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log('values', values);
     callback({...values});
   };
 
@@ -27,7 +26,6 @@ const useForm = (callback, defaultValues={}) => {
       value = parseInt(value);
     }
     
-    console.log('setting values');
     setValues(values => ({ ...values, [name]: value }));
   };
 
