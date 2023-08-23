@@ -2,24 +2,44 @@ import React, { useContext, useState } from "react";
 import { SettingsContext } from "../../Context/Settings";
 import { Card, Text, Badge, Button, Group } from "@mantine/core";
 import { Pagination } from "@mantine/core";
+import axios from "axios";
 
 const List = (props) => {
-  const [activePage, setPage] = useState(1);
   const settings = useContext(SettingsContext);
+  const [activePage, setPage] = useState(1);
 
-  const todoItems = props.items;
+  const items = props.items;
+  const setItems = props.setItems;
   const itemsPerPage = settings.numItems;
 
-
-  const pageCount = Math.ceil(todoItems.length / itemsPerPage);
-
-  const displayedItems = todoItems.slice(
-    (activePage - 1) * itemsPerPage,
-    activePage * itemsPerPage
-  );
+  const start = (activePage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  const displayedItems = items.slice(start, end);
 
   const handlePageChange = (page) => {
     setPage(page);
+  };
+
+  const toggleComplete = async (item) => {
+    const url = `${process.env.REACT_APP_API}/api/v1/todo/${item._id}`;
+
+    try {
+      await axios.put(url, {
+        ...item,
+        complete: !item.complete,
+      });
+      const updatedItems = items.map((i) =>
+        i._id === item._id ? { ...item, complete: !item.complete } : i
+      );
+
+      setItems(
+        settings.showCompleted
+          ? updatedItems
+          : updatedItems.filter((i) => !i.complete)
+      );
+    } catch (error) {
+      console.error(error.message);
+    }
   };
 
   return (
@@ -43,7 +63,7 @@ const List = (props) => {
                 fullWidth
                 mt="md"
                 radius="md"
-                onClick={() => settings.toggleComplete(item.id)}
+                onClick={() => toggleComplete(item)}
               >
                 Complete: {item.complete.toString()}
               </Button>
@@ -52,10 +72,10 @@ const List = (props) => {
       )}
 
       <Pagination
-        current={activePage}
+        value={activePage}
         onChange={handlePageChange}
-        total={pageCount}
-        boundaries={3}
+        total={items.length / itemsPerPage + 1}
+        limit={itemsPerPage}
         position="center"
       />
     </>
