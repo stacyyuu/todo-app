@@ -12,44 +12,22 @@ import axios from "axios";
 
 const App = () => {
   const [items, setItems] = useState([]);
-  const [text, setText] = useState("");
-  const [assignee, setAssignee] = useState("");
-  const [difficulty, setDifficulty] = useState("");
 
   const getTodoItems = async function () {
-    let url = `${process.env.REACT_APP_API}/api/v1/todo`;
+    const url = `${process.env.REACT_APP_API}/api/v1/todo`;
     const response = await axios.get(url);
     setItems(response.data.results);
   };
 
-  const handleAddItem = async (e) => {
-    e.preventDefault();
-    let todoItem = {
-      text: text,
-      difficulty: difficulty,
-      assignee: assignee,
-      complete: false,
-    };
+  const handleAddItem = async (item) => {
     const url = `${process.env.REACT_APP_API}/api/v1/todo`;
 
     try {
-      const response = await axios.post(url, todoItem);
+      const response = await axios.post(url, item);
       setItems([...items, response.data]);
     } catch (e) {
       console.error(e.message);
     }
-  };
-
-  const handleChange = (e) => {
-    setText(e.target.value);
-  };
-
-  const handleAssignee = (e) => {
-    setAssignee(e.target.value);
-  };
-
-  const handleDifficulty = (e) => {
-    setDifficulty(e.target.value);
   };
 
   useEffect(() => {
@@ -64,9 +42,6 @@ const App = () => {
             <Auth capability="create">
               <Todo
                 handleAddItem={handleAddItem}
-                handleChange={handleChange}
-                handleAssignee={handleAssignee}
-                handleDifficulty={handleDifficulty}
               />
             </Auth>
           </Grid.Col>

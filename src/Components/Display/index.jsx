@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Group } from "@mantine/core";
 import { Select, Switch } from "@mantine/core";
 import { SettingsContext } from "../../Context/Settings";
@@ -6,11 +6,15 @@ import { SettingsContext } from "../../Context/Settings";
 const Display = () => {
   const settings = useContext(SettingsContext);
 
+  const changeSwitch = (e) => {
+    settings.changeShowCompleted(e);
+  };
+
   return (
     <Group position="center">
       <label>Display Items:
       <Select
-        placeholder="Pick one"
+        placeholder={5}
         data={[
           { value: 5, label: "5" },
           { value: 10, label: "10" },
@@ -22,8 +26,7 @@ const Display = () => {
       </label>
       <label>Completed:
       <Switch
-        checked={settings.showCompleted === true ? true : false}
-        onChange={(e) => settings.changeShowCompleted(e.currentTarget.checked)}
+        onChange={(e) => changeSwitch(e)}
         />
       </label>
     </Group>
